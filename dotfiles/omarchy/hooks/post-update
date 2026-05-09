@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Omarchy post-update hook: Restore custom Plymouth theme if it was overwritten
+# This runs automatically after `omarchy-update`
+
+HOME_THEME="$HOME/.config/omarchy/themes/deymn-plymouth"
+SYSTEM_THEME="/usr/share/plymouth/themes/deymn-plymouth"
+KEY_FILE="$SYSTEM_THEME/logo.png"
+
+# Check if custom theme exists in home
+if [[ ! -d "$HOME_THEME" ]]; then
+  exit 0  # Home theme doesn't exist, nothing to restore
+fi
+
+# Check if system theme is missing or key files are gone
+if [[ ! -f "$KEY_FILE" ]]; then
+  echo "deymn-plymouth boot theme was overwritten/deleted. Restoring from home config..."
+  sudo mkdir -p "$SYSTEM_THEME"
+  sudo cp -a "$HOME_THEME/." "$SYSTEM_THEME/"
+  # Ensure the theme file has the right name
+  if [[ -f "$SYSTEM_THEME/omarchy.plymouth" && ! -f "$SYSTEM_THEME/deymn-plymouth.plymouth" ]]; then
+    sudo mv "$SYSTEM_THEME/omarchy.plymouth" "$SYSTEM_THEME/deymn-plymouth.plymouth"
+  fi
+  # Update paths in the theme config
+  sudo sed -i 's|/usr/share/plymouth/themes/omarchy|/usr/share/plymouth/themes/deymn-plymouth|g' "$SYSTEM_THEME/deymn-plymouth.plymouth" 2>/dev/null
+  echo "Restored deymn-plymouth theme successfully."
+else
+  exit 0  # Theme is intact, no action needed
+fi
