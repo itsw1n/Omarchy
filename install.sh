@@ -40,6 +40,31 @@ echo "=== Done ==="
 echo "Dotfiles applied in ~/.config"
 echo "Backup stored at: $BACKUP_DIR"
 
+# 4.5 Optional: Install custom Plymouth boot theme
+if [[ -d "dotfiles/omarchy/themes/deymn-plymouth" ]]; then
+  read -rp "Install custom Plymouth boot theme (deymn-plymouth)? This requires sudo. (y/N): " INSTALL_THEME
+  if [[ "$INSTALL_THEME" =~ ^[Yy]$ ]]; then
+    echo "=== Installing custom Plymouth theme ==="
+    THEME_SRC="$PWD/dotfiles/omarchy/themes/deymn-plymouth"
+    THEME_DEST="/usr/share/plymouth/themes/deymn-plymouth"
+    
+    sudo mkdir -p "$THEME_DEST"
+    sudo cp -a "$THEME_SRC/." "$THEME_DEST/"
+    
+    # Ensure correct theme file naming
+    if [[ -f "$THEME_DEST/omarchy.plymouth" && ! -f "$THEME_DEST/deymn-plymouth.plymouth" ]]; then
+      sudo mv "$THEME_DEST/omarchy.plymouth" "$THEME_DEST/deymn-plymouth.plymouth"
+    fi
+    
+    # Update paths in theme config
+    sudo sed -i 's|/usr/share/plymouth/themes/omarchy|/usr/share/plymouth/themes/deymn-plymouth|g' "$THEME_DEST/deymn-plymouth.plymouth" 2>/dev/null
+    
+    # Set as default and rebuild initrd
+    sudo plymouth-set-default-theme deymn-plymouth -R
+    echo "Custom Plymouth theme installed successfully."
+  fi
+fi
+
 # 5. Ask if user wants to create symlinks
 read -rp "Do you want to create direct symlinks to the repo dotfiles? (y/N): " CREATE_LINK
 if [[ "$CREATE_LINK" =~ ^[Yy]$ ]]; then
