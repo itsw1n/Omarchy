@@ -1,6 +1,7 @@
 {
   "clock#time": {
     // "interval":
+    //"format": "14:32",
     "format": "{:%H:%M}",
     // "timezone":
     // "timezones":
@@ -28,6 +29,7 @@
 
   "clock#date": {
     // "interval":
+    //"format": "󰸗 May 14",
     "format": "󰸗 {:%d-%m}",
     // "timezone":
     // "timezones":
