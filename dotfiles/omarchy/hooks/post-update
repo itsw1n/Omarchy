@@ -1,29 +1,70 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Omarchy post-update hook: Restore custom Plymouth theme if it was overwritten
-# This runs automatically after `omarchy-update`
+# Omarchy post-update hook: Re-apply DEYMN lock logo after `omarchy-update`
 
-HOME_THEME="$HOME/.config/omarchy/themes/deymn-plymouth"
-SYSTEM_THEME="/usr/share/plymouth/themes/deymn-plymouth"
-KEY_FILE="$SYSTEM_THEME/logo.png"
+OMARCHY_BIN="$HOME/.local/share/omarchy/bin"
+WRAPPER_SRC="$HOME/Files/omarchy-setup/scripts/omarchy-plymouth-set"
+WRAPPER_DST="$OMARCHY_BIN/omarchy-plymouth-set"
+DEYMN_GRAY="/usr/local/share/deymn-plymouth/logo-gray.png"
+THEME_DIR="/usr/share/plymouth/themes/omarchy"
+SDDM_DIR="/usr/share/sddm/themes/omarchy"
+STAGING="/tmp/deymn-lock-recolor"
 
-# Check if custom theme exists in home
-if [[ ! -d "$HOME_THEME" ]]; then
-  exit 0  # Home theme doesn't exist, nothing to restore
+# Fallback: try repo if persistent backup missing
+if [[ ! -f "$DEYMN_GRAY" ]]; then
+  REPO_GRAY="$HOME/Files/omarchy-setup/assets/logo/logo-gray.png"
+  [[ -f "$REPO_GRAY" ]] && DEYMN_GRAY="$REPO_GRAY"
 fi
 
-# Check if system theme is missing or key files are gone
-if [[ ! -f "$KEY_FILE" ]]; then
-  echo "deymn-plymouth boot theme was overwritten/deleted. Restoring from home config..."
-  sudo mkdir -p "$SYSTEM_THEME"
-  sudo cp -a "$HOME_THEME/." "$SYSTEM_THEME/"
-  # Ensure the theme file has the right name
-  if [[ -f "$SYSTEM_THEME/omarchy.plymouth" && ! -f "$SYSTEM_THEME/deymn-plymouth.plymouth" ]]; then
-    sudo mv "$SYSTEM_THEME/omarchy.plymouth" "$SYSTEM_THEME/deymn-plymouth.plymouth"
+# 1. Ensure the wrapper is in place
+if [[ -f "$WRAPPER_DST" ]] && ! grep -q "DEYMN" "$WRAPPER_DST" 2>/dev/null; then
+  if [[ ! -f "$OMARCHY_BIN/omarchy-plymouth-set.orig" ]]; then
+    cp "$WRAPPER_DST" "$OMARCHY_BIN/omarchy-plymouth-set.orig"
   fi
-  # Update paths in the theme config
-  sudo sed -i 's|/usr/share/plymouth/themes/omarchy|/usr/share/plymouth/themes/deymn-plymouth|g' "$SYSTEM_THEME/deymn-plymouth.plymouth" 2>/dev/null
-  echo "Restored deymn-plymouth theme successfully."
-else
-  exit 0  # Theme is intact, no action needed
+  if [[ -f "$WRAPPER_SRC" ]]; then
+    cp "$WRAPPER_SRC" "$WRAPPER_DST"
+    chmod +x "$WRAPPER_DST"
+    echo "DEYMN lock wrapper re-applied."
+  fi
 fi
+
+# 2. Restore logo if overwritten (2512 = default Omarchy size)
+current_size=$(stat -c%s "$THEME_DIR/logo.png" 2>/dev/null || echo 0)
+if [[ "$current_size" -eq 2232 ]] || [[ ! -f "$DEYMN_GRAY" ]]; then
+  exit 0
+fi
+
+# Find active theme's accent color
+THEME_NAME=$(cat "$HOME/.config/omarchy/current/theme.name" 2>/dev/null || echo "")
+if [[ -z "$THEME_NAME" ]]; then
+  echo "Warning: Could not determine active theme." >&2
+  exit 0
+fi
+
+if [[ -f "$HOME/.config/omarchy/themes/$THEME_NAME/colors.toml" ]]; then
+  COLORS_TOML="$HOME/.config/omarchy/themes/$THEME_NAME/colors.toml"
+elif [[ -f "$HOME/.local/share/omarchy/themes/$THEME_NAME/colors.toml" ]]; then
+  COLORS_TOML="$HOME/.local/share/omarchy/themes/$THEME_NAME/colors.toml"
+else
+  exit 0
+fi
+
+accent=$(awk -F'"' '/^accent/{print $2}' "$COLORS_TOML" 2>/dev/null || echo "")
+if [[ -z "$accent" ]]; then
+  exit 0
+fi
+
+echo "Restoring DEYMN lock logo ($THEME_NAME accent: $accent)..."
+mkdir -p "$STAGING"
+magick "$DEYMN_GRAY" -channel RGB +level-colors "${accent}","${accent}" "$STAGING/logo.png"
+sudo cp "$STAGING/logo.png" "$THEME_DIR/logo.png"
+sudo cp "$STAGING/logo.png" "$SDDM_DIR/logo.png" 2>/dev/null || true
+rm -rf "$STAGING"
+
+if command -v limine-mkinitcpio &>/dev/null; then
+  sudo limine-mkinitcpio
+else
+  sudo mkinitcpio -P
+fi
+
+echo "DEYMN lock logo restored ($accent)."
