@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+set -e
+
+BIN_DIR="$(dirname "$0")"
+ORIGINAL="$BIN_DIR/omarchy-plymouth-set.orig"
+DEYMN_GRAY="/usr/local/share/deymn-plymouth/logo-gray.png"
+THEME_DIR="/usr/share/plymouth/themes/omarchy"
+SDDM_DIR="/usr/share/sddm/themes/omarchy"
+STAGING="/tmp/deymn-lock-recolor"
+
+if [[ ! -f "$ORIGINAL" ]]; then
+  echo "Error: original omarchy-plymouth-set not found at $ORIGINAL" >&2
+  exit 1
+fi
+
+# Run the original Omarchy command (deploys theme with OMARCHY logo, rebuilds initrd)
+"$ORIGINAL" "$@"
+
+if [[ ! -f "$DEYMN_GRAY" ]]; then
+  REPO_GRAY="$HOME/Files/omarchy-setup/assets/logo/logo-gray.png"
+  if [[ -f "$REPO_GRAY" ]]; then
+    DEYMN_GRAY="$REPO_GRAY"
+    # Seed the persistent backup for next time
+    sudo mkdir -p /usr/local/share/deymn-plymouth
+    sudo cp "$DEYMN_GRAY" /usr/local/share/deymn-plymouth/logo-gray.png
+  else
+    echo "Warning: DEYMN gray template not found." >&2
+    exit 0
+  fi
+fi
+
+# Extract accent color from the theme's colors.toml ($3 = path/to/theme/unlock.png)
+theme_dir="$(dirname "$3")"
+accent=$(awk -F'"' '/^accent/{print $2}' "$theme_dir/colors.toml" 2>/dev/null || echo "")
+
+if [[ -z "$accent" ]]; then
+  echo "Warning: could not read accent color from $theme_dir/colors.toml" >&2
+  exit 0
+fi
+
+# Recolor gray logo with the theme's accent color and deploy
+mkdir -p "$STAGING"
+magick "$DEYMN_GRAY" -channel RGB +level-colors "${accent}","${accent}" "$STAGING/logo.png"
+sudo cp "$STAGING/logo.png" "$THEME_DIR/logo.png"
+sudo cp "$STAGING/logo.png" "$SDDM_DIR/logo.png" 2>/dev/null || true
+rm -rf "$STAGING"
+
+if command -v limine-mkinitcpio &>/dev/null; then
+  sudo limine-mkinitcpio
+else
+  sudo mkinitcpio -P
+fi
