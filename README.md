@@ -8,6 +8,8 @@ This is my personal Omarchy setup — my copy in case I switch to a different ma
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/ac52d359-9f85-436b-a52c-05bc565c4db8" />
 <img width="2048" height="1536" alt="lockscreen" src="https://github.com/user-attachments/assets/f8464f0c-9ce2-424d-ba77-e7521c99b137" />
 <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/40451dc9-fc48-4ed2-9050-34d22bcd4488" />
+<img width="1918" height="977" alt="screenshot-2026-07-24_00-14-24" src="https://github.com/user-attachments/assets/d274049b-88c3-411d-91db-9b4053c64630" />
+
 
 ## What's in here
 
