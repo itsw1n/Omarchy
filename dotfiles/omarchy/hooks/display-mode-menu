@@ -1,0 +1,35 @@
+#!/bin/bash
+
+EXTERNAL=$(hyprctl monitors -j | jq -r '.[] | select(.name | contains("eDP") | not).name' | head -n 1)
+
+if [[ -z "$EXTERNAL" ]]; then
+  notify-send -u low "󰍹    Display Mode" "No external display detected"
+  exit 0
+fi
+
+CHOICE=$(printf "Duplicate\nExtend\nExternal only\nInternal only" | walker --dmenu -p "Display mode:" -n)
+
+case "$CHOICE" in
+  "Duplicate")
+    omarchy-hyprland-monitor-internal-mirror on
+    ;;
+  "Extend")
+    omarchy-hyprland-monitor-internal-mirror off
+    omarchy-hyprland-monitor-internal on
+    hyprctl reload
+    notify-send -u low "󰍹    Display Mode" "Extended mode"
+    ;;
+  "External only")
+    omarchy-hyprland-monitor-internal-mirror off
+    omarchy-hyprland-monitor-internal off
+    notify-send -u low "󰍹    Display Mode" "External only"
+    ;;
+  "Internal only")
+    omarchy-hyprland-monitor-internal-mirror off
+    omarchy-hyprland-monitor-internal on
+    for ext in $(hyprctl monitors -j | jq -r '.[] | select(.name | contains("eDP") | not).name'); do
+      hyprctl keyword monitor "$ext,disable"
+    done
+    notify-send -u low "󰍹    Display Mode" "Internal only"
+    ;;
+esac
