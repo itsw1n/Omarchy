@@ -14,6 +14,7 @@ This is my personal Omarchy setup — my copy in case I switch to a different ma
 - **Hyprland** — monitors, input, bindings, idle/lock, screensaver, night light
 - **Waybar** — [mechabar](https://github.com/sejjy/mechabar) with Omarchy color integration
 - **Lock branding** — DEYMN Plymouth/SDDM logo that auto-recolors to the active theme accent
+- **Screensaver** — custom ASCII art branding displayed by the screensaver
 - **Omarchy hooks** — re-applies lock branding after `omarchy-update`
 
 ## What this setup does
@@ -24,7 +25,8 @@ This is my personal Omarchy setup — my copy in case I switch to a different ma
    - A symlink `latest` points to the most recent backup.
 3. **Apply personal dotfiles** by copying them into `~/.config/`.
 4. **Install DEYMN lock wrapper** — patches `omarchy-plymouth-set` so every theme change recolors the lock logo with the current accent. Also offers to apply the logo immediately (requires sudo).
-5. **Prompt for symlinks** — after dotfiles are applied, the script asks if you want direct symlinks from the repo to `~/.config/` for instant updates.
+5. **Apply screensaver branding** — ASCII art from `dotfiles/omarchy/branding/screensaver.txt` appears when the screensaver activates.
+6. **Prompt for symlinks** — after dotfiles are applied, the script asks if you want direct symlinks from the repo to `~/.config/` for instant updates.
 
 ## How to install
 
