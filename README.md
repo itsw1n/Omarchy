@@ -34,7 +34,7 @@ This is my personal Omarchy setup — my copy in case I switch to a different ma
 
 ```bash
 mkdir -p ~/Files
-git clone https://github.com/deymn/omarchy-setup.git ~/Files/omarchy-setup
+git clone https://github.com/itsw1n/Omarchy.git ~/Files/omarchy-setup
 cd ~/Files/omarchy-setup
 ./install.sh
 ```
