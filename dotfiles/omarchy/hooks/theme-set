@@ -1,0 +1,5 @@
+#!/bin/bash
+GLOBAL_DIR="$HOME/.config/omarchy/wallpapers"
+CURRENT_BG_DIR="$HOME/.config/omarchy/current/theme/backgrounds"
+mkdir -p "$CURRENT_BG_DIR"
+[[ -d "$GLOBAL_DIR" ]] && cp -n "$GLOBAL_DIR"/* "$CURRENT_BG_DIR/" 2>/dev/null
