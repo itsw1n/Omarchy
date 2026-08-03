@@ -40,7 +40,14 @@ echo "=== Done ==="
 echo "Dotfiles applied in ~/.config"
 echo "Backup stored at: $BACKUP_DIR"
 
-# 4.5 Install DEYMN lock theme wrapper
+# 4.5 Seed global wallpapers into the current theme
+# Copies dotfiles/omarchy/wallpapers/* into the active theme's backgrounds
+# so they appear in the wallpaper cycle for every theme.
+if [[ -d "$HOME/.config/omarchy/hooks/theme-set" ]] || [[ -f "$HOME/.config/omarchy/hooks/theme-set" ]]; then
+  bash "$HOME/.config/omarchy/hooks/theme-set" "$(cat "$HOME/.config/omarchy/current/theme.name" 2>/dev/null)"
+fi
+
+# 4.6 Install DEYMN lock theme wrapper
 # Replaces omarchy-plymouth-set with our wrapper so every unlock theme
 # change automatically applies the DEYMN logo instead of the default.
 OMARCHY_BIN="$HOME/.local/share/omarchy/bin"
@@ -53,7 +60,7 @@ if [[ -f "$OMARCHY_BIN/omarchy-plymouth-set" ]]; then
   echo "DEYMN lock wrapper installed."
 fi
 
-# 4.6 Apply the DEYMN logo now (copies to system + persistent backup)
+# 4.7 Apply the DEYMN logo now (copies to system + persistent backup)
 read -rp "Apply DEYMN logo to the unlock/lock screen? This requires sudo. (y/N): " APPLY_LOGO
 if [[ "$APPLY_LOGO" =~ ^[Yy]$ ]]; then
   # Seed persistent backup
