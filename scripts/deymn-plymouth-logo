@@ -44,23 +44,29 @@ STAGING=$(mktemp -d)
 trap 'rm -rf "$STAGING"' EXIT
 magick "$DEYMN_GRAY" -channel RGB +level-colors "${accent}","${accent}" "$STAGING/logo.png" || exit 0
 
-# Never hang an unattended update on a password prompt.
+# Unattended hooks (update/boot) must never hang on a password prompt.
+# An interactive run may prompt so theme changes still recolor the logo.
+SUDO=(sudo -n)
 if ! sudo -n true 2>/dev/null; then
-  echo "deymn-plymouth-logo: sudo not cached; logo staged at $STAGING/logo.png (skipping deploy)" >&2
-  exit 0
+  if [[ -t 0 || -t 1 ]]; then
+    SUDO=(sudo)
+  else
+    echo "deymn-plymouth-logo: no cached sudo; logo staged at $STAGING/logo.png (skipping deploy)" >&2
+    exit 0
+  fi
 fi
 
 changed=0
-if ! sudo -n cmp -s "$STAGING/logo.png" "$THEME_DIR/logo.png" 2>/dev/null; then
-  sudo -n cp "$STAGING/logo.png" "$THEME_DIR/logo.png" && changed=1
+if ! "${SUDO[@]}" cmp -s "$STAGING/logo.png" "$THEME_DIR/logo.png" 2>/dev/null; then
+  "${SUDO[@]}" cp "$STAGING/logo.png" "$THEME_DIR/logo.png" && changed=1
 fi
-sudo -n cp "$STAGING/logo.png" "$SDDM_DIR/logo.png" 2>/dev/null || true
+"${SUDO[@]}" cp "$STAGING/logo.png" "$SDDM_DIR/logo.png" 2>/dev/null || true
 
 if (( changed )); then
   if command -v limine-mkinitcpio >/dev/null 2>&1; then
-    sudo -n limine-mkinitcpio >/dev/null 2>&1 || sudo -n mkinitcpio -P >/dev/null 2>&1 || true
+    "${SUDO[@]}" limine-mkinitcpio >/dev/null 2>&1 || "${SUDO[@]}" mkinitcpio -P >/dev/null 2>&1 || true
   else
-    sudo -n mkinitcpio -P >/dev/null 2>&1 || true
+    "${SUDO[@]}" mkinitcpio -P >/dev/null 2>&1 || true
   fi
 fi
 
