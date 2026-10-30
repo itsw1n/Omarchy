@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Recolor the DEYMN logo with the newly selected theme's accent.
+set -uo pipefail
+
+REPO_ROOT="$HOME/Files/omarchy-setup"
+BRAND="$REPO_ROOT/scripts/deymn-plymouth-logo"
+[[ -x "$BRAND" ]] && "$BRAND"

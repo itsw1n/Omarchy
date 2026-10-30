@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Apply the staged quattro Hyprland Lua configs (no-op on 3.x).
+set -uo pipefail
+
+REPO_ROOT="$HOME/Files/omarchy-setup"
+[[ -x "$REPO_ROOT/scripts/apply-v4-hypr" ]] && "$REPO_ROOT/scripts/apply-v4-hypr"
+exit 0

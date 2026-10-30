@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Re-apply DEYMN branding after `omarchy update` (Omarchy 3.x and quattro/v4).
+set -uo pipefail
+
+REPO_ROOT="$HOME/Files/omarchy-setup"
+BRAND="$REPO_ROOT/scripts/deymn-plymouth-logo"
+
+# 1. Plymouth + SDDM logo. Never patches Omarchy's packaged scripts.
+[[ -x "$BRAND" ]] && "$BRAND"
+
+# 2. Legacy 3.x only: keep the wrapper that recolors on every theme change.
+#    On v4 the packaged omarchy-plymouth-set lives in /usr/share and handles
+#    SDDM itself, so the wrapper is unnecessary and skipped.
+if [[ ! -f /usr/share/omarchy/bin/omarchy-plymouth-set ]]; then
+  OMARCHY_BIN="$HOME/.local/share/omarchy/bin"
+  WRAPPER_SRC="$REPO_ROOT/scripts/omarchy-plymouth-set"
+  WRAPPER_DST="$OMARCHY_BIN/omarchy-plymouth-set"
+  if [[ -f "$WRAPPER_SRC" && -f "$WRAPPER_DST" ]] && ! grep -q DEYMN "$WRAPPER_DST" 2>/dev/null; then
+    [[ -f "$OMARCHY_BIN/omarchy-plymouth-set.orig" ]] || cp "$WRAPPER_DST" "$OMARCHY_BIN/omarchy-plymouth-set.orig"
+    cp "$WRAPPER_SRC" "$WRAPPER_DST" && chmod +x "$WRAPPER_DST"
+    echo "DEYMN 3.x lock wrapper re-applied."
+  fi
+fi
+
+# 3. Screensaver ASCII (quattro overwrites it with the stock logo).
+SCREENSAVER="$HOME/.config/omarchy/branding/screensaver.txt"
+REPO_SCREENSAVER="$REPO_ROOT/dotfiles/omarchy/branding/screensaver.txt"
+if [[ -f "$REPO_SCREENSAVER" ]] && ! cmp -s "$REPO_SCREENSAVER" "$SCREENSAVER" 2>/dev/null; then
+  mkdir -p "$(dirname "$SCREENSAVER")"
+  cp "$REPO_SCREENSAVER" "$SCREENSAVER"
+  echo "DEYMN screensaver branding restored."
+fi
+
+# 4. fastfetch terminal brand.
+LOGO_VERT="$HOME/.config/omarchy/branding/logo_vertical"
+REPO_LOGO_VERT="$REPO_ROOT/dotfiles/omarchy/branding/logo_vertical"
+if [[ ! -f "$LOGO_VERT" && -f "$REPO_LOGO_VERT" ]]; then
+  cp "$REPO_LOGO_VERT" "$LOGO_VERT"
+  echo "logo_vertical restored for fastfetch."
+fi
