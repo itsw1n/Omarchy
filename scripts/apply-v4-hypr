@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Apply the staged quattro Hyprland Lua configs after the v4 upgrade.
+# Idempotent; no-op on 3.x.
+set -uo pipefail
+
+[[ -d /usr/share/omarchy ]] || exit 0
+
+REPO_ROOT="${REPO_ROOT:-$HOME/Files/omarchy-setup}"
+SRC="$REPO_ROOT/staging/hypr"
+DST="$HOME/.config/hypr"
+[[ -d "$SRC" ]] || exit 0
+
+mkdir -p "$DST"
+for f in input.lua monitors.lua bindings.lua; do
+  src="$SRC/$f"
+  dst="$DST/$f"
+  [[ -f "$src" ]] || continue
+  if ! cmp -s "$src" "$dst" 2>/dev/null; then
+    cp "$src" "$dst"
+    echo "apply-v4-hypr: applied $f"
+  fi
+done
