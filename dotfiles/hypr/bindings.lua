@@ -2,7 +2,7 @@
 
 -- OpenCode instead of Calendar; Typora instead of Omawrite.
 hl.unbind("SUPER + SHIFT + C")
-o.bind("SUPER + SHIFT + C", "OpenCode", { tui = "opencode" })
+o.bind("SUPER + SHIFT + C", "OpenCode", "omarchy-launch-tui --app-id=org.omarchy.opencode ~/.config/hypr/scripts/opencode.sh")
 hl.unbind("SUPER + SHIFT + W")
 o.bind("SUPER + SHIFT + W", "Typora", "uwsm-app -- typora --enable-wayland-ime")
 

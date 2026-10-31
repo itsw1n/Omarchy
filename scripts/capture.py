@@ -10,7 +10,7 @@ import tarfile
 ROOT = Path(__file__).resolve().parents[1]
 FILES = (
     'hypr/hyprland.lua', 'hypr/bindings.lua', 'hypr/input.lua', 'hypr/looknfeel.lua',
-    'hypr/scripts/display-mode.py', 'hypr/scripts/send-to-tv.sh', 'hypr/scripts/bring-from-tv.sh',
+    'hypr/scripts/opencode.sh', 'hypr/scripts/display-mode.py', 'hypr/scripts/send-to-tv.sh', 'hypr/scripts/bring-from-tv.sh',
     'hypr/autostart.lua', 'hypr/hyprsunset.conf', 'hypr/xdph.conf',
     'omarchy/shell.json', 'omarchy/branding/screensaver.txt', 'omarchy/branding/logo_vertical',
     'omarchy/hooks/display-mode-menu', 'omarchy/hooks/theme-set.d/20-personal-wallpapers',

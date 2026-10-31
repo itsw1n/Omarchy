@@ -39,7 +39,9 @@ The installer selects the saved theme and wallpaper, validates Hyprland after
 reload and rescans shell plugins. Spectra and shell configuration hot-reload.
 Log in again if installing outside a running desktop. Use `packages.txt` for the
 font names and optional applications; applications and accounts are separate
-from this desktop snapshot. OpenCode and Typora shortcuts require those apps.
+from this desktop snapshot. OpenCode and Typora shortcuts require those apps. The OpenCode shortcut launches
+an installed Mise version in offline mode, with system/native installations as
+fallbacks; it never installs or updates OpenCode during startup.
 The default terminal selection remains the destination machine's preference.
 
 ## What is saved
