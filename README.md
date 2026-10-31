@@ -1,48 +1,119 @@
-# Omarchy Setup
+# DEYMN Omarchy Setup
 
-This is my personal Omarchy setup — my copy in case I switch to a different machine in the future. This setup applies my dotfiles, lock-screen branding, and a mecha-themed Waybar that tracks the active Omarchy theme. Symlinks are optional so edits in the repo reflect instantly.
+A portable snapshot of my Omarchy **4.x** desktop, including the **Spectra bar**
+(the native Quickshell replacement for my old Waybar), keyboard/input settings,
+DEYMN screensaver, personal wallpaper, idle times and terminal configurations.
+Tested on Omarchy 4.0.6 / Hyprland 0.56.2.
 
-**Status:** In Progress
+## Install on another machine
 
----
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/ac52d359-9f85-436b-a52c-05bc565c4db8" />
-<img width="2048" height="1536" alt="lockscreen" src="https://github.com/user-attachments/assets/f8464f0c-9ce2-424d-ba77-e7521c99b137" />
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/40451dc9-fc48-4ed2-9050-34d22bcd4488" />
-<img width="1918" height="977" alt="screenshot-2026-07-24_00-14-24" src="https://github.com/user-attachments/assets/d274049b-88c3-411d-91db-9b4053c64630" />
-
-
-## What's in here
-
-- **Hyprland** — monitors, input, bindings, idle/lock, screensaver, night light
-- **Waybar** — [mechabar](https://github.com/sejjy/mechabar) with Omarchy color integration
-- **Lock branding** — DEYMN Plymouth/SDDM logo that auto-recolors to the active theme accent
-- **Screensaver** — custom ASCII art branding displayed by the screensaver
-- **Omarchy hooks** — re-applies lock branding after `omarchy-update`
-
-## What this setup does
-
-1. **Install Omarchy** using the official installer.
-2. **Backup existing configs** from `~/.config/*` that match the dotfiles in this repo.
-   - Backups are stored in `~/Projects/omarchy-backups/YYYY-MM-DD_HH-MM-SS`
-   - A symlink `latest` points to the most recent backup.
-3. **Apply personal dotfiles** by copying them into `~/.config/`.
- 4. **Install DEYMN lock wrapper** — replaces `omarchy-plymouth-set` so every theme change recolors the DEYMN lock logo (`logov2_gray.png`) with the current accent. Also offers to apply the logo immediately (requires sudo).
- 5. **Apply screensaver branding** — ASCII art from `dotfiles/omarchy/branding/screensaver.txt` appears with random `tte` effects when the screensaver activates.
- 6. **Prompt for symlinks** — after dotfiles are applied, the script asks if you want direct symlinks from the repo to `~/.config/` for instant updates.
-
-## How to install
+Install Omarchy first and log into its desktop. Then:
 
 ```bash
-mkdir -p ~/Files
 git clone https://github.com/itsw1n/Omarchy.git ~/Files/omarchy-setup
 cd ~/Files/omarchy-setup
+./install.sh --dry-run
 ./install.sh
 ```
 
----
+The snapshot is bundled: no separate Spectra clone or download is needed. Python 3,
+jq, Hyprland and the Omarchy 4 shell are required. The installer copies files;
+there are no prompts, sudo operations, OS reinstallations or repository symlinks.
+The clone can live anywhere and can be moved afterward.
 
-## Future Plans
+Existing monitor settings are preserved by default. A new machine uses automatic
+connector detection, preferred resolution, automatic placement and scale 1.
+To explicitly replace its monitor configuration:
 
-- Add more dotfiles (Kitty, Ghostty, etc.)
-- Improve symlink automation
-- Make script more public-friendly
+```bash
+./install.sh --monitors portable  # automatic layout
+./install.sh --monitors deymn     # my 1080p laptop at 1.25x and HDMI TV at 1x
+```
+
+The laptop/TV profile is hardware-specific. Adjust the scale in
+`~/.config/hypr/monitors.lua` for a different screen. Use `--no-apply` to copy
+without changing the running theme/session. `--home /tmp/example-home` installs
+offline into a separate home directory without running desktop commands.
+
+The installer selects the saved theme and wallpaper, validates Hyprland after
+reload and rescans shell plugins. Spectra and shell configuration hot-reload.
+Log in again if installing outside a running desktop. Use `packages.txt` for the
+font names and optional applications; applications and accounts are separate
+from this desktop snapshot. OpenCode and Typora shortcuts require those apps.
+The default terminal selection remains the destination machine's preference.
+
+## What is saved
+
+- `dotfiles/hypr/`: Lua overrides, display picker and TV scripts, night-light and portal configuration.
+- `dotfiles/omarchy/shell.json`: Spectra selection, widgets/actions, 150-second screensaver and 300-second lock.
+- `dotfiles/omarchy/plugins/itsw1n.spectra-bar/`: complete installed Spectra runtime and its MIT license.
+- `dotfiles/omarchy/branding/` and `wallpapers/`: personal artwork.
+- `dotfiles/omarchy/hooks/`: portable hooks with no dependency on this clone.
+- `dotfiles/{kitty,ghostty,alacritty,foot}/`: terminal settings.
+- `dotfiles/fastfetch/`: my system-info layout and DEYMN ASCII logo.
+- `profiles/`: automatic and original-machine display profiles.
+- `preferences.json`: theme and wallpaper selection.
+
+The installer merges these files into user configuration. Unrelated plugins,
+themes and hooks are preserved. It removes only obsolete DEYMN hooks that
+patched branding or overwrote configs on every boot. Existing repository-linked
+configuration directories are detached before writing.
+
+## Backups and rollback
+
+Every install backs up the affected configuration roots (`hypr`, `omarchy`, and
+four terminals, and `fastfetch`) under `~/.local/state/omarchy-setup/backups/<timestamp>/`.
+If copying or live validation fails, those configuration roots are restored.
+Theme application can also change generated theme state and application colors;
+that state is not part of configuration rollback. Reapply the previous theme if needed.
+
+To restore a previous configuration explicitly:
+
+```bash
+./install.sh --restore ~/.local/state/omarchy-setup/backups/TIMESTAMP
+```
+
+Restoration first backs up the current configuration and then restores those
+seven configuration roots, including files added since the backup. Log in again
+and reapply your previous theme afterward. Backups are local and never committed.
+
+## Update this snapshot after changing the desktop
+
+```bash
+python3 scripts/capture.py
+./install.sh --dry-run
+git diff
+```
+
+Capture reads an explicit list of desktop files and the installed Spectra plugin.
+It also saves the active wallpaper, theme name and locally authored theme overlays.
+It keeps a backup of the previous snapshot under
+`~/.local/state/omarchy-setup/captures/`. It does not collect credentials, Wi-Fi
+profiles, browser data, applications, or an entire home directory.
+
+To bundle a newer Spectra development checkout instead:
+
+```bash
+python3 scripts/capture.py --spectra-source ~/Files/spectra-bar
+```
+
+Installed files are independent copies. Capture again when you want local edits
+included in your next commit. Newly added custom scripts/hooks or application
+configurations must be added deliberately to the capture allowlist.
+
+## Removed old setup
+
+The obsolete v3 installer, Waybar files, Hyprlock/Hypridle configuration, upgrade
+staging and automatic Plymouth scripts have been removed from this working tree.
+They were backed up locally outside the repository before removal. The last
+committed legacy setup is also preserved in the
+[v1.0.0-omarchy3 release](https://github.com/itsw1n/Omarchy/releases/tag/v1.0.0-omarchy3). Stock Aether shader symlinks have
+been removed from the snapshot; they pointed to package-owned system files and
+are not required by this desktop. The installed shader package/files are untouched.
+
+Boot/login Plymouth branding is separate from the current Quickshell lock screen
+and remains a manual system customization. Personal artwork remains in assets/.
+Night light remains off by default, matching this desktop. No machine-specific
+Wi-Fi driver tweaks or upgrade preparation scripts are applied.
+
+See CLEANUP.md for the checks and retained files.
