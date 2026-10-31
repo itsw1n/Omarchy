@@ -1,0 +1,81 @@
+{
+  "bar": {
+    "centerAnchor": "spectra.emblem",
+    "id": "itsw1n.spectra-bar",
+    "layout": {
+      "center": [
+        {
+          "exec": "~/.config/omarchy/plugins/itsw1n.spectra-bar/scripts/stats.sh",
+          "id": "spectra.stats",
+          "interval": 5,
+          "onClick": "omarchy-launch-or-focus-tui btop",
+          "onRightClick": "omarchy-launch-terminal",
+          "type": "command"
+        },
+        {
+          "exec": "printf '  󰣇  '",
+          "fontSize": 21,
+          "id": "spectra.emblem",
+          "interval": 3600,
+          "type": "command"
+        },
+        {
+          "format": "ddd d  |  HH:mm",
+          "id": "omarchy.clock"
+        },
+        {
+          "id": "omarchy.system-update",
+          "onClick": "omarchy-launch-floating-terminal-with-presentation omarchy-update"
+        }
+      ],
+      "left": [
+        {
+          "id": "omarchy.menu"
+        },
+        {
+          "id": "spectra.workspaces",
+          "onScrollDown": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"-1\" })'",
+          "onScrollUp": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"+1\" })'",
+          "source": "~/.config/omarchy/plugins/itsw1n.spectra-bar/components/SpectraWorkspaces.qml",
+          "type": "qml"
+        },
+        {
+          "id": "omarchy.active-window",
+          "maxWidth": 250
+        }
+      ],
+      "right": [
+        {
+          "id": "omarchy.media"
+        },
+        {
+          "id": "omarchy.audio"
+        },
+        {
+          "id": "omarchy.network",
+          "onRightClick": "bash -lc 'if [ \"$(nmcli -t radio wifi)\" = enabled ]; then nmcli radio wifi off && omarchy-notification-send \"Wi-Fi\" \"Radio off\"; else nmcli radio wifi on && omarchy-notification-send \"Wi-Fi\" \"Radio on\"; fi'"
+        },
+        {
+          "id": "omarchy.bluetooth"
+        },
+        {
+          "id": "omarchy.monitor",
+          "onScrollDown": "omarchy-brightness-display 2%-",
+          "onScrollUp": "omarchy-brightness-display +2%"
+        },
+        {
+          "id": "omarchy.power",
+          "showPercentage": true
+        }
+      ]
+    },
+    "position": "top",
+    "transparent": false
+  },
+  "idle": {
+    "lock": 300,
+    "screensaver": 150
+  },
+  "plugins": [],
+  "version": 1
+}

@@ -1,0 +1,72 @@
+{
+  "position": "top",
+  "transparent": false,
+  "centerAnchor": "spectra.emblem",
+  "layout": {
+    "left": [
+      {
+        "id": "omarchy.menu"
+      },
+      {
+        "id": "spectra.workspaces",
+        "type": "qml",
+        "source": "~/.config/omarchy/plugins/itsw1n.spectra-bar/components/SpectraWorkspaces.qml",
+        "onScrollUp": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"+1\" })'",
+        "onScrollDown": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"-1\" })'"
+      },
+      {
+        "id": "omarchy.active-window",
+        "maxWidth": 250
+      }
+    ],
+    "center": [
+      {
+        "id": "spectra.stats",
+        "type": "command",
+        "exec": "~/.config/omarchy/plugins/itsw1n.spectra-bar/scripts/stats.sh",
+        "interval": 5,
+        "onClick": "omarchy-launch-or-focus-tui btop",
+        "onRightClick": "omarchy-launch-terminal"
+      },
+      {
+        "id": "spectra.emblem",
+        "type": "command",
+        "exec": "printf '  \udb82\udcc7  '",
+        "interval": 3600,
+        "fontSize": 21
+      },
+      {
+        "id": "omarchy.clock",
+        "format": "ddd d  |  HH:mm"
+      },
+      {
+        "id": "omarchy.system-update",
+        "onClick": "omarchy-launch-floating-terminal-with-presentation omarchy-update"
+      }
+    ],
+    "right": [
+      {
+        "id": "omarchy.media"
+      },
+      {
+        "id": "omarchy.audio"
+      },
+      {
+        "id": "omarchy.network",
+        "onRightClick": "bash -lc 'if [ \"$(nmcli -t radio wifi)\" = enabled ]; then nmcli radio wifi off && omarchy-notification-send \"Wi-Fi\" \"Radio off\"; else nmcli radio wifi on && omarchy-notification-send \"Wi-Fi\" \"Radio on\"; fi'"
+      },
+      {
+        "id": "omarchy.bluetooth"
+      },
+      {
+        "id": "omarchy.monitor",
+        "onScrollUp": "omarchy-brightness-display +2%",
+        "onScrollDown": "omarchy-brightness-display 2%-"
+      },
+      {
+        "id": "omarchy.power",
+        "showPercentage": true
+      }
+    ]
+  }
+}

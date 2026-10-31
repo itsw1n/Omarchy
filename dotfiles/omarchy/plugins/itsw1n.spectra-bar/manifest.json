@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "itsw1n.spectra-bar",
+  "name": "Spectra Bar",
+  "version": "1.0.0",
+  "author": "itsw1n",
+  "description": "Angular Omarchy v4 bar using the native widgets",
+  "kinds": ["bar"],
+  "entryPoints": {"bar": "Bar.qml"},
+  "omarchy": {"clonedFrom": "omarchy.bar"}
+}
