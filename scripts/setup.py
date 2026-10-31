@@ -10,6 +10,7 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+SPECTRA_REL = Path('dotfiles/omarchy/plugins/itsw1n.spectra-bar')
 TOPS = ('hypr', 'omarchy', 'foot', 'fastfetch')
 # Earlier backups also included these terminals; preserve explicit rollback support.
 LEGACY_TOPS = ('hypr', 'omarchy', 'kitty', 'ghostty', 'alacritty', 'foot', 'fastfetch')
@@ -57,7 +58,8 @@ def materialize(path):
 
 
 def validate():
-    files = sorted(p for p in (ROOT / 'dotfiles').rglob('*') if p.is_file())
+    files = sorted(p for p in (ROOT / 'dotfiles').rglob('*')
+                   if p.is_file() and not p.is_relative_to(ROOT / SPECTRA_REL))
     if any(p.is_symlink() for p in files):
         raise RuntimeError('Snapshot must contain real files, not machine-specific symlinks')
     for p in files:
@@ -66,7 +68,7 @@ def validate():
     shell = json.loads((ROOT / 'dotfiles/omarchy/shell.json').read_text())
     if shell['bar']['id'] != 'itsw1n.spectra-bar':
         raise RuntimeError('Expected the Spectra bar in shell.json')
-    spectra_files(ROOT / 'spectra-bar')
+    spectra_files(ROOT / SPECTRA_REL)
     return files
 
 
@@ -167,7 +169,7 @@ def main():
         link_source = plugin_dst.resolve()
     if link_source is not None and (link_source == plugin_dst or plugin_dst in link_source.parents):
         parser.error('Spectra development checkout must be outside its installation directory')
-    plugin_source = link_source or ROOT / 'spectra-bar'
+    plugin_source = link_source or ROOT / SPECTRA_REL
     plugin_files = spectra_files(plugin_source)
     print(f'Spectra: {"development link to " + str(link_source) if link_source else "copy of pinned submodule"}')
     print(f'Destination: {config}\nManaged files: {len(files)}; monitors: {args.monitors}')

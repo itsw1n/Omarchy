@@ -16,7 +16,7 @@ cd ~/Files/omarchy-setup
 ./install.sh
 ```
 
-Spectra is saved as a Git submodule at `spectra-bar/`, pinned to a tested commit.
+Spectra is saved as a Git submodule at `dotfiles/omarchy/plugins/itsw1n.spectra-bar/`, pinned to a tested commit.
 For an existing clone, run `git submodule update --init --recursive` first.
 Python 3, jq, Hyprland and the Omarchy 4 shell are required. Normal installation
 copies desktop settings and Spectra runtime files; the source clone can then move.
@@ -49,7 +49,7 @@ The default terminal selection remains the destination machine's preference.
 
 - `dotfiles/hypr/`: Lua overrides, display picker and TV scripts, night-light and portal configuration.
 - `dotfiles/omarchy/shell.json`: Spectra selection, widgets/actions, 150-second screensaver and 300-second lock.
-- `spectra-bar/`: Git submodule pointing to the saved Spectra version; its runtime and MIT license are copied during installation.
+- `dotfiles/omarchy/plugins/itsw1n.spectra-bar/`: Git submodule pointing to the saved Spectra version; its runtime and MIT license are copied during installation.
 - `dotfiles/omarchy/branding/` and `wallpapers/`: personal artwork.
 - `dotfiles/omarchy/hooks/`: portable hooks with no dependency on this clone.
 - `dotfiles/foot/`: settings for Foot, my current terminal. Other terminal configurations are not captured or installed.

@@ -8,6 +8,7 @@ import shutil
 import tarfile
 
 ROOT = Path(__file__).resolve().parents[1]
+SPECTRA_REL = 'dotfiles/omarchy/plugins/itsw1n.spectra-bar'
 FILES = (
     'hypr/hyprland.lua', 'hypr/bindings.lua', 'hypr/input.lua', 'hypr/looknfeel.lua',
     'hypr/scripts/opencode.sh', 'hypr/scripts/display-mode.py', 'hypr/scripts/send-to-tv.sh', 'hypr/scripts/bring-from-tv.sh',
@@ -32,7 +33,9 @@ def main():
     archive = dest / (datetime.datetime.now().strftime('%Y%m%d-%H%M%S-%f') + '.tar.gz')
     with tarfile.open(archive, 'w:gz') as tar:
         for name in ('dotfiles', 'profiles', 'preferences.json'):
-            tar.add(ROOT / name, arcname=name)
+            tar.add(ROOT / name, arcname=name,
+                    filter=lambda item: None if item.name == SPECTRA_REL
+                    or item.name.startswith(SPECTRA_REL + '/') else item)
     for name in FILES:
         source, target = config / name, ROOT / 'dotfiles' / name
         target.parent.mkdir(parents=True, exist_ok=True)

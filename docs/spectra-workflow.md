@@ -1,7 +1,7 @@
 # Spectra workflow
 
 **Spectra owns the bar code. Omarchy Setup saves which Spectra version to install.**
-The saved version is a Git submodule at `spectra-bar/`.
+The saved version is a Git submodule at `dotfiles/omarchy/plugins/itsw1n.spectra-bar/`.
 
 ## On your development machine
 
@@ -22,23 +22,23 @@ First test, commit and push your changes in the original Spectra repo. Then:
 
 ```bash
 cd ~/Files/omarchy-setup
-git submodule update --init --remote spectra-bar
-git diff --submodule=log -- spectra-bar
+git submodule update --init --remote dotfiles/omarchy/plugins/itsw1n.spectra-bar
+git diff --submodule=log -- dotfiles/omarchy/plugins/itsw1n.spectra-bar
 ```
 
 That selects the latest published upstream commit. Check it is the version you
 want, then save the reference:
 
 ```bash
-git add spectra-bar
+git add dotfiles/omarchy/plugins/itsw1n.spectra-bar
 git commit -m "chore(bar): update Spectra"
 ```
 
 For a specific tested commit instead, fetch and select it before `git add`:
 
 ```bash
-git -C spectra-bar fetch origin
-git -C spectra-bar checkout --detach COMMIT_HASH
+git -C dotfiles/omarchy/plugins/itsw1n.spectra-bar fetch origin
+git -C dotfiles/omarchy/plugins/itsw1n.spectra-bar checkout --detach COMMIT_HASH
 ```
 
 Changes in the original checkout do **not** automatically update this saved

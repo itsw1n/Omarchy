@@ -6,6 +6,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import tempfile
+import tarfile
 import unittest
 from unittest import mock
 
@@ -41,7 +42,7 @@ class SetupTests(unittest.TestCase):
         self.assertEqual(shell['bar']['id'], 'itsw1n.spectra-bar')
         plugin = self.config / 'omarchy/plugins/itsw1n.spectra-bar'
         self.assertEqual((plugin / 'Bar.qml').read_bytes(),
-                         (ROOT / 'spectra-bar/Bar.qml').read_bytes())
+                         (ROOT / setup.SPECTRA_REL / 'Bar.qml').read_bytes())
         self.assertEqual((self.config / 'hypr/monitors.lua').read_bytes(),
                          (ROOT / 'profiles/portable-monitors.lua').read_bytes())
         self.assertFalse(any(p.is_symlink() for p in self.config.rglob('*')))
@@ -120,7 +121,7 @@ class SetupTests(unittest.TestCase):
 
     def test_development_link_is_preserved_and_can_switch_to_copy(self):
         source = Path(self.temp.name) / 'Spectra development'
-        shutil.copytree(ROOT / 'spectra-bar', source, ignore=shutil.ignore_patterns('.git'))
+        shutil.copytree(ROOT / setup.SPECTRA_REL, source, ignore=shutil.ignore_patterns('.git'))
         self.install('--spectra-dev', str(source))
         plugin = self.config / 'omarchy/plugins/itsw1n.spectra-bar'
         self.assertTrue(plugin.is_symlink())
@@ -132,14 +133,15 @@ class SetupTests(unittest.TestCase):
         self.assertIn('uncommitted development edit', (plugin / 'Bar.qml').read_text())
         self.install('--spectra-copy')
         self.assertFalse(plugin.is_symlink())
-        self.assertEqual((plugin / 'Bar.qml').read_bytes(), (ROOT / 'spectra-bar/Bar.qml').read_bytes())
+        self.assertEqual((plugin / 'Bar.qml').read_bytes(), (ROOT / setup.SPECTRA_REL / 'Bar.qml').read_bytes())
         self.assertIn('uncommitted development edit', bar.read_text())
         self.assertFalse((plugin / '.git').exists())
         self.assertFalse((plugin / 'install.sh').exists())
 
     def test_missing_submodule_fails_before_writing(self):
         isolated = Path(self.temp.name) / 'uninitialized clone'
-        shutil.copytree(ROOT / 'dotfiles', isolated / 'dotfiles')
+        shutil.copytree(ROOT / 'dotfiles', isolated / 'dotfiles',
+                        ignore=shutil.ignore_patterns('itsw1n.spectra-bar'))
         with mock.patch.object(setup, 'ROOT', isolated), \
              mock.patch('sys.argv', ['setup.py', '--home', str(self.home)]):
             with self.assertRaisesRegex(RuntimeError, 'git submodule update --init'):
@@ -150,17 +152,26 @@ class SetupTests(unittest.TestCase):
         self.install()
         isolated = Path(self.temp.name) / 'capture repo'
         for name in ('dotfiles', 'profiles', 'scripts'):
-            shutil.copytree(ROOT / name, isolated / name)
+            shutil.copytree(ROOT / name, isolated / name,
+                            ignore=shutil.ignore_patterns('itsw1n.spectra-bar'))
         shutil.copy2(ROOT / 'preferences.json', isolated / 'preferences.json')
         state = self.home / '.local/state/omarchy/current'
         state.mkdir(parents=True)
         (state / 'theme.name').write_text('matte-black')
+        submodule = isolated / setup.SPECTRA_REL
+        submodule.mkdir(parents=True)
+        (submodule / 'keep').write_text('unchanged submodule')
         env = dict(__import__('os').environ, HOME=str(self.home))
         result = subprocess.run(['python3', str(isolated / 'scripts/capture.py')],
                                 env=env, text=True, capture_output=True)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertFalse((isolated / 'dotfiles/omarchy/plugins').exists())
-        self.assertFalse((isolated / 'spectra-bar').exists())
+        self.assertEqual(list(submodule.iterdir()), [submodule / 'keep'])
+        self.assertEqual((submodule / 'keep').read_text(), 'unchanged submodule')
+        archive = next((self.home / '.local/state/omarchy-setup/captures').iterdir())
+        with tarfile.open(archive) as snapshot:
+            self.assertFalse(any(name == str(setup.SPECTRA_REL) or
+                                 name.startswith(str(setup.SPECTRA_REL) + '/')
+                                 for name in snapshot.getnames()))
 
     def test_copy_failure_rolls_back(self):
         (self.config / 'hypr').mkdir(parents=True)
