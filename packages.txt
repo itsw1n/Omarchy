@@ -1,0 +1,13 @@
+# Omarchy 4.x must already be installed. The installer checks python3, jq,
+# hyprctl and omarchy-shell; it never reinstalls the OS or installs packages.
+# Fonts used by the captured terminal configurations:
+otf-commit-mono-nerd
+ttf-jetbrains-mono-nerd-basic
+# Optional personal applications (install only those you use):
+# typora
+# opencode
+# kitty
+# ghostty
+# alacritty
+# foot
+# btop

@@ -11,3 +11,8 @@ Thumbs.db
 # Ignore logs or temp files
 *.log
 
+
+# Python caches and archived upgrade leftovers
+__pycache__/
+*.pyc
+*.bak.*
