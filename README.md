@@ -105,6 +105,16 @@ Installed files are independent copies. Capture again when you want local edits
 included in your next commit. Newly added custom scripts/hooks or application
 configurations must be added deliberately to the capture allowlist.
 
+## Planned Spectra repository workflow
+
+The proposed long-term arrangement uses a Git submodule to save a tested Spectra
+commit and a local development symlink to use edits from `~/Files/spectra-bar`
+immediately. The saved setup version is updated deliberately, not automatically.
+
+This is documented in [docs/spectra-workflow.md](docs/spectra-workflow.md), including
+update commands and migration requirements. **It is not implemented yet**; the
+current installer and capture workflow still use the bundled copy described above.
+
 ## Removed old setup
 
 The obsolete v3 installer, Waybar files, Hyprlock/Hypridle configuration, upgrade
