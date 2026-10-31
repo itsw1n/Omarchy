@@ -64,14 +64,32 @@ def validate():
         if p.suffix == '.json':
             json.loads(p.read_text())
     shell = json.loads((ROOT / 'dotfiles/omarchy/shell.json').read_text())
-    plugin = ROOT / 'dotfiles/omarchy/plugins' / shell['bar']['id']
-    manifest = json.loads((plugin / 'manifest.json').read_text())
-    assert manifest['id'] == shell['bar']['id']
-    for name in ('Bar.qml', 'BarModel.js', 'Theme.qml', 'qmldir',
-                 'components/SpectraWorkspaces.qml', 'scripts/stats.sh', 'LICENSE'):
-        if not (plugin / name).is_file():
-            raise RuntimeError(f'Missing Spectra asset: {name}')
+    if shell['bar']['id'] != 'itsw1n.spectra-bar':
+        raise RuntimeError('Expected the Spectra bar in shell.json')
+    spectra_files(ROOT / 'spectra-bar')
     return files
+
+
+def spectra_files(source):
+    required = ('manifest.json', 'Bar.qml', 'BarModel.js', 'Theme.qml', 'qmldir',
+                'components/ArchBadge.qml', 'components/ArchControlHub.qml',
+                'components/HubControlRow.qml', 'components/PrismPanel.qml',
+                'components/PrismConnector.qml', 'components/SpectraWorkspaces.qml',
+                'assets/arch.svg', 'scripts/stats.sh', 'LICENSE')
+    for name in required:
+        if not (source / name).is_file():
+            raise RuntimeError(f'Missing Spectra file: {source / name}. '
+                               'Run git submodule update --init --recursive.')
+    manifest = json.loads((source / 'manifest.json').read_text())
+    if manifest['id'] != 'itsw1n.spectra-bar':
+        raise RuntimeError(f'Expected Spectra plugin at {source}')
+    files = [source / name for name in
+             ('manifest.json', 'Bar.qml', 'BarModel.js', 'Theme.qml', 'qmldir', 'LICENSE')]
+    for directory in ('components', 'assets', 'scripts'):
+        files.extend(p for p in (source / directory).rglob('*') if p.is_file())
+    if any(p.is_symlink() for p in files):
+        raise RuntimeError('Spectra runtime files must not be symlinks')
+    return sorted(files)
 
 
 def backup(home, config, roots=TOPS):
@@ -114,13 +132,17 @@ def main():
                         help='Keep existing monitors; use portable on a new machine (default)')
     parser.add_argument('--no-apply', action='store_true', help='Copy only; apply theme/session at next login')
     parser.add_argument('--restore', type=Path, help='Restore an installer backup (backs up current config first)')
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument('--spectra-dev', type=Path, metavar='CHECKOUT',
+                      help='Link the installed plugin to a local Spectra checkout')
+    mode.add_argument('--spectra-copy', action='store_true',
+                      help='Replace a development link with a copy of the pinned submodule')
     args = parser.parse_args()
     home = args.home.expanduser().resolve()
     config = home / '.config'
     live = home == Path.home().resolve()
     if os.geteuid() == 0 and live:
         parser.error('Run as your desktop user, not root')
-    files = validate()
     if live and not args.restore:
         version = subprocess.check_output(['omarchy', 'version'], text=True).strip()
         if not version.startswith('4.'):
@@ -138,6 +160,16 @@ def main():
         restore(dest, config)
         print(f'Restored {dest}. Previous configuration saved at {current}. Log in again to apply.')
         return
+    files = validate()
+    plugin_dst = config / 'omarchy/plugins/itsw1n.spectra-bar'
+    link_source = args.spectra_dev.expanduser().resolve() if args.spectra_dev else None
+    if link_source is None and plugin_dst.is_symlink() and not args.spectra_copy:
+        link_source = plugin_dst.resolve()
+    if link_source is not None and (link_source == plugin_dst or plugin_dst in link_source.parents):
+        parser.error('Spectra development checkout must be outside its installation directory')
+    plugin_source = link_source or ROOT / 'spectra-bar'
+    plugin_files = spectra_files(plugin_source)
+    print(f'Spectra: {"development link to " + str(link_source) if link_source else "copy of pinned submodule"}')
     print(f'Destination: {config}\nManaged files: {len(files)}; monitors: {args.monitors}')
     print('Copies Spectra, shell layout/idle, Lua settings, Foot, branding, wallpaper and hooks.')
     print('Archives/backups, credentials, network profiles and legacy/ are not installed.')
@@ -163,6 +195,17 @@ def main():
                 materialize(parent)
             remove(dst)
             shutil.copy2(p, dst)
+        materialize(plugin_dst.parent)
+        if link_source is not None:
+            if not plugin_dst.is_symlink() or plugin_dst.resolve() != link_source:
+                remove(plugin_dst)
+                plugin_dst.symlink_to(link_source, target_is_directory=True)
+        else:
+            remove(plugin_dst)
+            for source in plugin_files:
+                dst = plugin_dst / source.relative_to(plugin_source)
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(source, dst)
         monitor = config / 'hypr/monitors.lua'
         if args.monitors != 'preserve' or not monitor.exists():
             profile = 'deymn' if args.monitors == 'deymn' else 'portable'
@@ -201,7 +244,7 @@ def main():
             subprocess.run(['hyprctl', 'reload'], check=False)
         print(f'Configuration restored after failure. Backup: {saved}', file=sys.stderr)
         raise
-    print('Installed. No link to the repository is required. Log in again if installed without a live session.')
+    print('Installed. ' + ('Development checkout must stay in place.' if link_source else 'Installed files are independent copies.') + ' Log in again if installed without a live session.')
     print('Optional applications: see packages.txt. Boot/login Plymouth branding stays manual; see README.')
 
 

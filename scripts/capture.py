@@ -20,16 +20,10 @@ FILES = (
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--spectra-source', type=Path, help='Use a Spectra development checkout instead of the installed plugin')
-    args = parser.parse_args()
+    parser.parse_args()
     config = Path.home() / '.config'
-    plugin = args.spectra_source or config / 'omarchy/plugins/itsw1n.spectra-bar'
-    manifest = json.loads((plugin / 'manifest.json').read_text())
-    if manifest['id'] != 'itsw1n.spectra-bar':
-        parser.error('Expected the Spectra bar plugin')
     # Validate all required inputs before replacing any snapshot files.
     required = [config / p for p in FILES] + [config / 'hypr/monitors.lua']
-    required += [plugin / p for p in ('Bar.qml', 'BarModel.js', 'Theme.qml', 'qmldir', 'scripts/stats.sh')]
     for path in required:
         if not path.is_file():
             parser.error(f'Missing required source: {path}')
@@ -44,13 +38,6 @@ def main():
         target.parent.mkdir(parents=True, exist_ok=True)
         if source.resolve() != target.resolve():
             shutil.copy2(source, target)
-    target = ROOT / 'dotfiles/omarchy/plugins/itsw1n.spectra-bar'
-    for name in ('Bar.qml', 'BarModel.js', 'Theme.qml', 'qmldir', 'manifest.json', 'LICENSE', 'README.md', 'layout.json'):
-        if (plugin / name).is_file():
-            shutil.copy2(plugin / name, target / name)
-    for name in ('components', 'assets', 'scripts'):
-        shutil.rmtree(target / name)
-        shutil.copytree(plugin / name, target / name, symlinks=False)
     shutil.copy2(config / 'hypr/monitors.lua', ROOT / 'profiles/deymn-monitors.lua')
     theme = (Path.home() / '.local/state/omarchy/current/theme.name').read_text().strip()
     prefs = {'theme': theme, 'wallpaper': 'wallmain.png'}
@@ -68,7 +55,7 @@ def main():
                 shutil.rmtree(target_theme)
             shutil.copytree(directory, target_theme, symlinks=False,
                             ignore=shutil.ignore_patterns('.git', '*.bak', '*.sample', '*~'))
-    print(f'Captured current desktop and Spectra. Previous snapshot: {archive}')
+    print(f'Captured desktop settings. Spectra stays pinned by its Git submodule. Previous snapshot: {archive}')
     print('Review git diff before committing. Apps, accounts, passwords and hardware state are not captured.')
 
 

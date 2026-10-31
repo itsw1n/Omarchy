@@ -1,0 +1,3 @@
+[submodule "spectra-bar"]
+	path = spectra-bar
+	url = https://github.com/itsw1n/spectra-bar.git
