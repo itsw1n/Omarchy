@@ -25,8 +25,9 @@ No installed shader package, system file, application or terminal config was rem
 Retained deliberately:
 
 - Spectra, shell layout/actions, branding, wallpaper, Lua overrides and display scripts.
-- Alacritty, Ghostty, Kitty and Foot settings. An app not running at inspection
-  time is insufficient evidence that its settings are unwanted. These stay portable.
+- Foot settings, matching the current default terminal. After the user confirmed
+  the other terminals are unused, Alacritty, Ghostty and Kitty configs were removed
+  from the repository and capture list. Their installed apps/settings are untouched.
 - Original artwork in assets/: it is personal source material, not obsolete code.
 - Separate portable and original-machine monitor profiles.
 

@@ -91,6 +91,33 @@ class SetupTests(unittest.TestCase):
         self.assertTrue((linked / '10-deymn-branding').exists())
         self.assertFalse((hooks / 'theme-set.d/10-deymn-branding').exists())
 
+    def test_other_terminals_are_not_installed_or_modified(self):
+        self.config.mkdir(parents=True)
+        for name in ('kitty', 'ghostty', 'alacritty'):
+            path = self.config / name
+            path.mkdir()
+            (path / 'keep').write_text('original')
+        self.install()
+        for name in ('kitty', 'ghostty', 'alacritty'):
+            self.assertEqual(list((self.config / name).iterdir()), [self.config / name / 'keep'])
+            self.assertEqual((self.config / name / 'keep').read_text(), 'original')
+        saved = next((self.home / '.local/state/omarchy-setup/backups').iterdir())
+        manifest = json.loads((saved / 'manifest.json').read_text())
+        self.assertEqual(manifest['tops'], list(setup.TOPS))
+        self.assertTrue((self.config / 'foot/foot.ini').exists())
+
+    def test_older_terminal_backups_remain_restorable(self):
+        (self.config / 'kitty').mkdir(parents=True)
+        (self.config / 'kitty/config').write_text('old kitty')
+        saved = setup.backup(self.home, self.config, roots=setup.LEGACY_TOPS)
+        (self.config / 'kitty/config').write_text('new kitty')
+        self.install('--restore', str(saved))
+        self.assertEqual((self.config / 'kitty/config').read_text(), 'old kitty')
+        backups = sorted((self.home / '.local/state/omarchy-setup/backups').iterdir())
+        before_restore = backups[-1]
+        self.install('--restore', str(before_restore))
+        self.assertEqual((self.config / 'kitty/config').read_text(), 'new kitty')
+
     def test_copy_failure_rolls_back(self):
         (self.config / 'hypr').mkdir(parents=True)
         original = self.config / 'hypr/monitors.lua'

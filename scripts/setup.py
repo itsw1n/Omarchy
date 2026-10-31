@@ -10,7 +10,9 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-TOPS = ('hypr', 'omarchy', 'kitty', 'ghostty', 'alacritty', 'foot', 'fastfetch')
+TOPS = ('hypr', 'omarchy', 'foot', 'fastfetch')
+# Earlier backups also included these terminals; preserve explicit rollback support.
+LEGACY_TOPS = ('hypr', 'omarchy', 'kitty', 'ghostty', 'alacritty', 'foot', 'fastfetch')
 RETIRED = ('omarchy/hooks/theme-set',
            'omarchy/hooks/post-boot.d/10-deymn-branding',
            'omarchy/hooks/post-boot.d/20-deymn-v4-configs',
@@ -72,24 +74,29 @@ def validate():
     return files
 
 
-def backup(home, config):
+def backup(home, config, roots=TOPS):
     stamp = datetime.datetime.now().strftime('%Y%m%d-%H%M%S-%f')
     dest = home / '.local/state/omarchy-setup/backups' / stamp
     dest.mkdir(parents=True, mode=0o700)
     present = []
-    for name in TOPS:
+    for name in roots:
         if exists(config / name):
             copy(config / name, dest / 'config' / name)
             present.append(name)
-    (dest / 'manifest.json').write_text(json.dumps({'present': present, 'tops': TOPS}))
+    (dest / 'manifest.json').write_text(json.dumps({'present': present, 'tops': roots}))
     return dest
 
 
-def restore(dest, config):
+def backup_manifest(dest):
     manifest = json.loads((dest / 'manifest.json').read_text())
-    if tuple(manifest['tops']) != TOPS or not set(manifest['present']).issubset(TOPS):
+    if tuple(manifest['tops']) not in (TOPS, LEGACY_TOPS) or not set(manifest['present']).issubset(manifest['tops']):
         raise RuntimeError('Invalid backup manifest')
-    for name in TOPS:
+    return manifest
+
+
+def restore(dest, config):
+    manifest = backup_manifest(dest)
+    for name in manifest['tops']:
         remove(config / name)
         if name in manifest['present']:
             copy(dest / 'config' / name, config / name)
@@ -123,16 +130,16 @@ def main():
                 parser.error(f'Required command is missing: {cmd}')
     if args.restore:
         dest = args.restore.expanduser().resolve()
-        json.loads((dest / 'manifest.json').read_text())
+        manifest = backup_manifest(dest)
         if args.dry_run:
             print(f'Would restore desktop configuration from {dest}')
             return
-        current = backup(home, config)
+        current = backup(home, config, roots=tuple(manifest['tops']))
         restore(dest, config)
         print(f'Restored {dest}. Previous configuration saved at {current}. Log in again to apply.')
         return
     print(f'Destination: {config}\nManaged files: {len(files)}; monitors: {args.monitors}')
-    print('Copies Spectra, shell layout/idle, Lua settings, terminals, branding, wallpaper and hooks.')
+    print('Copies Spectra, shell layout/idle, Lua settings, Foot, branding, wallpaper and hooks.')
     print('Archives/backups, credentials, network profiles and legacy/ are not installed.')
     if args.dry_run:
         for p in files:

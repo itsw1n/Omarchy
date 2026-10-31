@@ -2,7 +2,7 @@
 
 A portable snapshot of my Omarchy **4.x** desktop, including the **Spectra bar**
 (the native Quickshell replacement for my old Waybar), keyboard/input settings,
-DEYMN screensaver, personal wallpaper, idle times and terminal configurations.
+DEYMN screensaver, personal wallpaper, idle times and Foot terminal settings.
 Tested on Omarchy 4.0.6 / Hyprland 0.56.2.
 
 ## Install on another machine
@@ -49,7 +49,7 @@ The default terminal selection remains the destination machine's preference.
 - `dotfiles/omarchy/plugins/itsw1n.spectra-bar/`: complete installed Spectra runtime and its MIT license.
 - `dotfiles/omarchy/branding/` and `wallpapers/`: personal artwork.
 - `dotfiles/omarchy/hooks/`: portable hooks with no dependency on this clone.
-- `dotfiles/{kitty,ghostty,alacritty,foot}/`: terminal settings.
+- `dotfiles/foot/`: settings for Foot, my current terminal. Other terminal configurations are not captured or installed.
 - `dotfiles/fastfetch/`: my system-info layout and DEYMN ASCII logo.
 - `profiles/`: automatic and original-machine display profiles.
 - `preferences.json`: theme and wallpaper selection.
@@ -62,7 +62,7 @@ configuration directories are detached before writing.
 ## Backups and rollback
 
 Every install backs up the affected configuration roots (`hypr`, `omarchy`, and
-four terminals, and `fastfetch`) under `~/.local/state/omarchy-setup/backups/<timestamp>/`.
+`foot`, and `fastfetch`) under `~/.local/state/omarchy-setup/backups/<timestamp>/`.
 If copying or live validation fails, those configuration roots are restored.
 Theme application can also change generated theme state and application colors;
 that state is not part of configuration rollback. Reapply the previous theme if needed.
@@ -74,8 +74,10 @@ To restore a previous configuration explicitly:
 ```
 
 Restoration first backs up the current configuration and then restores those
-seven configuration roots, including files added since the backup. Log in again
-and reapply your previous theme afterward. Backups are local and never committed.
+four configuration roots, including files added since the backup. Log in again
+and reapply your previous theme afterward. Older seven-directory backups remain
+supported; explicitly restoring one also restores the other terminal settings it
+contains. Backups are local and never committed.
 
 ## Update this snapshot after changing the desktop
 

@@ -14,7 +14,7 @@ FILES = (
     'hypr/autostart.lua', 'hypr/hyprsunset.conf', 'hypr/xdph.conf',
     'omarchy/shell.json', 'omarchy/branding/screensaver.txt', 'omarchy/branding/logo_vertical',
     'omarchy/hooks/display-mode-menu', 'omarchy/hooks/theme-set.d/20-personal-wallpapers',
-    'fastfetch/config.jsonc', 'kitty/kitty.conf', 'ghostty/config', 'alacritty/alacritty.toml', 'foot/foot.ini',
+    'fastfetch/config.jsonc', 'foot/foot.ini',
 )
 
 
