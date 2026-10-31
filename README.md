@@ -10,16 +10,17 @@ Tested on Omarchy 4.0.6 / Hyprland 0.56.2.
 Install Omarchy first and log into its desktop. Then:
 
 ```bash
-git clone https://github.com/itsw1n/Omarchy.git ~/Files/omarchy-setup
+git clone --recurse-submodules https://github.com/itsw1n/Omarchy.git ~/Files/omarchy-setup
 cd ~/Files/omarchy-setup
 ./install.sh --dry-run
 ./install.sh
 ```
 
-The snapshot is bundled: no separate Spectra clone or download is needed. Python 3,
-jq, Hyprland and the Omarchy 4 shell are required. The installer copies files;
-there are no prompts, sudo operations, OS reinstallations or repository symlinks.
-The clone can live anywhere and can be moved afterward.
+Spectra is saved as a Git submodule at `spectra-bar/`, pinned to a tested commit.
+For an existing clone, run `git submodule update --init --recursive` first.
+Python 3, jq, Hyprland and the Omarchy 4 shell are required. Normal installation
+copies desktop settings and Spectra runtime files; the source clone can then move.
+No OS reinstall or administrator privileges are required.
 
 Existing monitor settings are preserved by default. A new machine uses automatic
 connector detection, preferred resolution, automatic placement and scale 1.
@@ -48,7 +49,7 @@ The default terminal selection remains the destination machine's preference.
 
 - `dotfiles/hypr/`: Lua overrides, display picker and TV scripts, night-light and portal configuration.
 - `dotfiles/omarchy/shell.json`: Spectra selection, widgets/actions, 150-second screensaver and 300-second lock.
-- `dotfiles/omarchy/plugins/itsw1n.spectra-bar/`: complete installed Spectra runtime and its MIT license.
+- `spectra-bar/`: Git submodule pointing to the saved Spectra version; its runtime and MIT license are copied during installation.
 - `dotfiles/omarchy/branding/` and `wallpapers/`: personal artwork.
 - `dotfiles/omarchy/hooks/`: portable hooks with no dependency on this clone.
 - `dotfiles/foot/`: settings for Foot, my current terminal. Other terminal configurations are not captured or installed.
@@ -63,7 +64,7 @@ configuration directories are detached before writing.
 
 ## Backups and rollback
 
-Every install backs up the affected configuration roots (`hypr`, `omarchy`, and
+Every install backs up the affected configuration roots (`hypr`, `omarchy`,
 `foot`, and `fastfetch`) under `~/.local/state/omarchy-setup/backups/<timestamp>/`.
 If copying or live validation fails, those configuration roots are restored.
 Theme application can also change generated theme state and application colors;
@@ -89,31 +90,27 @@ python3 scripts/capture.py
 git diff
 ```
 
-Capture reads an explicit list of desktop files and the installed Spectra plugin.
+Capture reads an explicit list of desktop settings. It does not copy Spectra or
+change the saved submodule version.
 It also saves the active wallpaper, theme name and locally authored theme overlays.
 It keeps a backup of the previous snapshot under
 `~/.local/state/omarchy-setup/captures/`. It does not collect credentials, Wi-Fi
 profiles, browser data, applications, or an entire home directory.
 
-To bundle a newer Spectra development checkout instead:
+## Spectra development
+
+To use your separate Spectra checkout directly:
 
 ```bash
-python3 scripts/capture.py --spectra-source ~/Files/spectra-bar
+./install.sh --spectra-dev ~/Files/spectra-bar
 ```
 
-Installed files are independent copies. Capture again when you want local edits
-included in your next commit. Newly added custom scripts/hooks or application
-configurations must be added deliberately to the capture allowlist.
+Your running bar then uses that folder through a symlink. Edits affect the desktop;
+the folder must stay in place. Repeat installs preserve the link.
+To return to a standalone copy of the saved version, run `./install.sh --spectra-copy`.
 
-## Planned Spectra repository workflow
-
-The proposed long-term arrangement uses a Git submodule to save a tested Spectra
-commit and a local development symlink to use edits from `~/Files/spectra-bar`
-immediately. The saved setup version is updated deliberately, not automatically.
-
-This is documented in [docs/spectra-workflow.md](docs/spectra-workflow.md), including
-update commands and migration requirements. **It is not implemented yet**; the
-current installer and capture workflow still use the bundled copy described above.
+Spectra edits do not automatically update this repo's saved version.
+See [the short update workflow](docs/spectra-workflow.md).
 
 ## Removed old setup
 

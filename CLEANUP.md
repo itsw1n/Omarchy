@@ -38,3 +38,8 @@ TV/mirroring behavior still needs verification with an external display attached
 The legacy baseline is preserved in the published v1.0.0-omarchy3 tag/release.
 The subsequent v4 migration is recorded in separate commits; no v4 release has
 been created as part of this cleanup.
+
+Spectra now uses a pinned Git submodule at spectra-bar/ instead of copied source.
+The local desktop plugin links to ~/Files/spectra-bar for development. Normal
+installs copy the saved submodule runtime; repeat installs preserve development
+links unless --spectra-copy is requested. Desktop capture does not copy Spectra.
