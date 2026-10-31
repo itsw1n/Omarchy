@@ -1,20 +1,17 @@
-#!/bin/bash
-# Bring the most recent window from TV workspace 3 to the current workspace.
+#!/usr/bin/env bash
+# Bring the last-focused window on TV workspace 3 back to this workspace.
 set -euo pipefail
-
-ACTIVE=$(hyprctl activeworkspace -j | jq -r '.id')
-
-if [[ "$ACTIVE" == "3" ]]; then
-  hyprctl dispatch movetoworkspace 1 >/dev/null
-  notify-send -u low "󰍹 Back on laptop" "Window from TV → workspace 1"
+active=$(hyprctl activeworkspace -j | jq -r '.id')
+[[ "$active" =~ ^[0-9]+$ ]] || exit 1
+if [[ "$active" == 3 ]]; then
+  hyprctl dispatch 'hl.dsp.window.move({ workspace = "1", follow = true })'
   exit 0
 fi
-
-WIN=$(hyprctl clients -j | jq -r '.[] | select(.workspace.id == 3) | .address' | tail -n 1)
-if [[ -z "$WIN" ]]; then
-  notify-send -u low "󰍹 Back on laptop" "No window on workspace 3"
+window=$(hyprctl clients -j | jq -r '[.[] | select(.workspace.id == 3)] | sort_by(.focusHistoryID // 999999) | .[0].address // empty')
+if [[ -z "$window" ]]; then
+  omarchy-notification-send 'Bring from TV' 'No window on workspace 3'
   exit 0
 fi
-
-hyprctl dispatch movetoworkspacesilent "$ACTIVE,address:$WIN" >/dev/null
-notify-send -u low "󰍹 Back on laptop" "Window from TV → workspace $ACTIVE"
+[[ "$window" =~ ^0x[0-9a-fA-F]+$ ]] || exit 1
+hyprctl dispatch "hl.dsp.window.move({ window = \"address:$window\", workspace = \"$active\", follow = false })"
+omarchy-notification-send 'Back on laptop' "Window moved to workspace $active"

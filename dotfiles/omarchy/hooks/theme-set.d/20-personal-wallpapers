@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Omarchy 4 reads user backgrounds from ~/.config/omarchy/backgrounds/<theme>.
+set -euo pipefail
+theme=${1:-$(cat "$HOME/.local/state/omarchy/current/theme.name")}
+[[ "$theme" =~ ^[A-Za-z0-9_-]+$ ]] || exit 1
+source_dir="$HOME/.config/omarchy/wallpapers"
+target_dir="$HOME/.config/omarchy/backgrounds/$theme"
+[[ -d "$source_dir" ]] || exit 0
+mkdir -p "$target_dir"
+shopt -s nullglob
+for wallpaper in "$source_dir"/*; do
+  [[ -f "$wallpaper" ]] || continue
+  [[ -e "$target_dir/$(basename "$wallpaper")" ]] || cp "$wallpaper" "$target_dir/"
+done

@@ -1,1 +1,158 @@
-/home/deymn/.config/fastfetch/config.jsonc
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  "logo": {
+    "type": "file",
+    "source": "~/.config/omarchy/branding/logo_vertical",
+    "color": {
+      "1": "green"
+    },
+    "padding": {
+      "top": 1,
+      "right": 6,
+      "left": 2
+    }
+  },
+  "modules": [
+    "break",
+    {
+      "type": "custom",
+      "format": "\u001b[90m\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500Hardware\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510"
+    },
+    {
+      "type": "host",
+      "key": "\uf109 PC",
+      "keyColor": "green"
+    },
+    {
+      "type": "cpu",
+      "key": "\u2502 \u251c\uf4bc",
+      "showPeCoreCount": true,
+      "keyColor": "green"
+    },
+    {
+      "type": "gpu",
+      "key": "\u2502 \u251c\ue266",
+      "detectionMethod": "pci",
+      "keyColor": "green"
+    },
+    {
+      "type": "display",
+      "key": "\u2502 \u251c\udb84\udd04",
+      "keyColor": "green"
+    },
+    {
+      "type": "disk",
+      "key": "\u2502 \u251c\udb80\udeca",
+      "keyColor": "green"
+    },
+    {
+      "type": "memory",
+      "key": "\u2502 \u251c\uefc5",
+      "keyColor": "green"
+    },
+    {
+      "type": "swap",
+      "key": "\u2514 \u2514\udb81\udce1 ",
+      "keyColor": "green"
+    },
+    {
+      "type": "custom",
+      "format": "\u001b[90m\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518"
+    },
+    "break",
+    {
+      "type": "custom",
+      "format": "\u001b[90m\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500Software\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510"
+    },
+    {
+      "type": "command",
+      "key": "\ue900 OS",
+      "keyColor": "blue",
+      "text": "version=$(omarchy-version); echo \"Omarchy $version\""
+    },
+    {
+      "type": "command",
+      "key": "\u2502 \u251c\udb81\ude2c",
+      "keyColor": "blue",
+      "text": "branch=$(omarchy-version-branch); echo \"$branch\""
+    },
+    {
+      "type": "command",
+      "key": "\u2502 \u251c\udb81\udd2b",
+      "keyColor": "blue",
+      "text": "channel=$(omarchy-version-channel); echo \"$channel\""
+    },
+    {
+      "type": "kernel",
+      "key": "\u2502 \u251c\uf013",
+      "keyColor": "blue"
+    },
+    {
+      "type": "wm",
+      "key": "\u2502 \u251c\uf488",
+      "keyColor": "blue"
+    },
+    {
+      "type": "de",
+      "key": "\uf488 DE",
+      "keyColor": "blue"
+    },
+    {
+      "type": "terminal",
+      "key": "\u2502 \u251c\uf489",
+      "keyColor": "blue"
+    },
+    {
+      "type": "packages",
+      "key": "\u2502 \u251c\udb80\udfd6",
+      "keyColor": "blue"
+    },
+    {
+      "type": "wmtheme",
+      "key": "\u2502 \u251c\udb80\ude7c",
+      "keyColor": "blue"
+    },
+    {
+      "type": "command",
+      "key": "\u2502 \u251c\udb83\ude0c",
+      "keyColor": "blue",
+      "text": "theme=$(omarchy-theme-current); echo -e \"$theme \\e[38m\u25cf\\e[37m\u25cf\\e[36m\u25cf\\e[35m\u25cf\\e[34m\u25cf\\e[33m\u25cf\\e[32m\u25cf\\e[31m\u25cf\""
+    },
+    {
+      "type": "terminalfont",
+      "key": "\u2514 \u2514\uf031",
+      "keyColor": "blue"
+    },
+    {
+      "type": "custom",
+      "format": "\u001b[90m\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518"
+    },
+    "break",
+    {
+      "type": "custom",
+      "format": "\u001b[90m\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500Age / Uptime / Update\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510"
+    },
+    {
+      "type": "command",
+      "key": "\udb86\udd9f OS Age",
+      "keyColor": "magenta",
+      "text": "echo $(( ($(date +%s) - $(stat -c %W /)) / 86400 )) days"
+    },
+    {
+      "type": "uptime",
+      "key": "\udb86\uded0 Uptime",
+      "keyColor": "magenta"
+    },
+    {
+      "type": "command",
+      "key": "\ueb29 Update",
+      "keyColor": "magenta",
+      "text": "updated=$(omarchy-version-pkgs); echo \"$updated\""
+    },
+    {
+      "type": "custom",
+      "format": "\u001b[90m\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518"
+    },
+    "break"
+  ]
+}

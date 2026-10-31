@@ -1,13 +1,12 @@
-#!/bin/bash
-# Send the focused window to workspace 3 on the external display (TV).
+#!/usr/bin/env bash
+# Move the focused window and workspace 3 to the first active external display.
 set -euo pipefail
-
-EXTERNAL=$(hyprctl monitors -j | jq -r '.[] | select(.name | test("^(eDP|LVDS|DSI)-") | not) | .name' | head -n 1)
-if [[ -z "$EXTERNAL" ]]; then
-  notify-send -u low "󰍹 Sent to TV" "No external display detected"
+external=$(hyprctl monitors -j | jq -r '[.[] | select(.name | test("^(eDP|LVDS|DSI)-") | not)][0].name // empty')
+if [[ -z "$external" ]]; then
+  omarchy-notification-send 'Send to TV' 'No external display detected'
   exit 0
 fi
-
-hyprctl dispatch movetoworkspacesilent 3 >/dev/null
-hyprctl dispatch moveworkspacetomonitor 3 "$EXTERNAL" >/dev/null 2>&1 || true
-notify-send -u low "󰍹 Sent to TV" "Window → workspace 3 ($EXTERNAL). Press SUPER+3 to view, SUPER+ALT+SHIFT+P to bring back"
+[[ "$external" =~ ^[A-Za-z0-9._-]+$ ]] || exit 1
+hyprctl dispatch 'hl.dsp.window.move({ workspace = "3", follow = false })'
+hyprctl dispatch "hl.dsp.workspace.move({ workspace = \"3\", monitor = \"$external\" })"
+omarchy-notification-send 'Sent to TV' 'Window moved to workspace 3. Super+Alt+Shift+P brings it back.'
