@@ -1,9 +1,17 @@
 # DEYMN Omarchy Setup
 
-A portable snapshot of my Omarchy **4.x** desktop, including the **Spectra bar**
-(the native Quickshell replacement for my old Waybar), keyboard/input settings,
+A portable snapshot of the DEYMN Omarchy **4.x** desktop, including **Spectra Bar**
+(a native Quickshell bar), keyboard/input settings,
 DEYMN screensaver, personal wallpaper, idle times and Foot terminal settings.
 Tested on Omarchy 4.0.6 / Hyprland 0.56.2.
+
+This repository restores desktop settings. [Spectra Bar](https://github.com/itsw1n/spectra-bar)
+is an independent bar for Omarchy v4. This setup connects to its repository
+through a Git submodule and installs a saved Spectra version by default.
+A separate Spectra installation is not required. The development-link option
+changes where the bar reads its code; it does not make Spectra optional.
+See the [Spectra installation and update guide](docs/spectra-workflow.md) for
+installation instructions and the workflow for maintaining both repositories.
 
 ## Install on another machine
 
@@ -16,7 +24,8 @@ cd ~/Files/omarchy-setup
 ./install.sh
 ```
 
-Spectra is saved as a Git submodule at `dotfiles/omarchy/plugins/itsw1n.spectra-bar/`, pinned to a tested commit.
+The clone command also downloads the saved Spectra version. Git calls this linked
+repository a **submodule**; it lives at `dotfiles/omarchy/plugins/itsw1n.spectra-bar/`.
 For an existing clone, run `git submodule update --init --recursive` first.
 Python 3, jq, Hyprland and the Omarchy 4 shell are required. Normal installation
 copies desktop settings and Spectra runtime files; the source clone can then move.
@@ -28,7 +37,7 @@ To explicitly replace its monitor configuration:
 
 ```bash
 ./install.sh --monitors portable  # automatic layout
-./install.sh --monitors deymn     # my 1080p laptop at 1.25x and HDMI TV at 1x
+./install.sh --monitors deymn     # DEYMN laptop at 1.25x and HDMI TV at 1x
 ```
 
 The laptop/TV profile is hardware-specific. Adjust the scale in
@@ -52,8 +61,8 @@ The default terminal selection remains the destination machine's preference.
 - `dotfiles/omarchy/plugins/itsw1n.spectra-bar/`: Git submodule pointing to the saved Spectra version; its runtime and MIT license are copied during installation.
 - `dotfiles/omarchy/branding/` and `wallpapers/`: personal artwork.
 - `dotfiles/omarchy/hooks/`: portable hooks with no dependency on this clone.
-- `dotfiles/foot/`: settings for Foot, my current terminal. Other terminal configurations are not captured or installed.
-- `dotfiles/fastfetch/`: my system-info layout and DEYMN ASCII logo.
+- `dotfiles/foot/`: Foot terminal settings. Other terminal configurations are not captured or installed.
+- `dotfiles/fastfetch/`: system-info layout and DEYMN ASCII logo.
 - `profiles/`: automatic and original-machine display profiles.
 - `preferences.json`: theme and wallpaper selection.
 
@@ -97,20 +106,23 @@ It keeps a backup of the previous snapshot under
 `~/.local/state/omarchy-setup/captures/`. It does not collect credentials, Wi-Fi
 profiles, browser data, applications, or an entire home directory.
 
-## Spectra development
+## Optional: edit Spectra directly
 
-To use your separate Spectra checkout directly:
+For bar development, clone Spectra separately, then run this command from the
+`omarchy-setup` folder:
 
 ```bash
 ./install.sh --spectra-dev ~/Files/spectra-bar
 ```
 
-Your running bar then uses that folder through a symlink. Edits affect the desktop;
-the folder must stay in place. Repeat installs preserve the link.
+The running bar reads that folder through a symlink (a filesystem shortcut).
+Reload the shell after code changes if needed. The folder must stay in place.
+Repeat installs preserve the link.
 To return to a standalone copy of the saved version, run `./install.sh --spectra-copy`.
 
 Spectra edits do not automatically update this repo's saved version.
-See [the short update workflow](docs/spectra-workflow.md).
+After publishing Spectra changes, follow [the update workflow](docs/spectra-workflow.md#after-publishing-spectra-changes-maintainers)
+to save the newer version in this setup.
 
 ## Removed old setup
 
