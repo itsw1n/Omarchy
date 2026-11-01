@@ -1,97 +1,108 @@
-# DEYMN Omarchy Setup
+<p align="center">
+  <img src="assets/logo/logo-green.png" width="420" alt="DEYMN logo">
+</p>
 
-A portable snapshot of the DEYMN Omarchy **4.x** desktop, including **Spectra Bar**
-(a native Quickshell bar), keyboard/input settings,
-DEYMN screensaver, personal wallpaper, idle times and Foot terminal settings.
-Tested on Omarchy 4.0.6 / Hyprland 0.56.2.
+<h1 align="center">DEYMN Omarchy Setup</h1>
 
-This repository restores desktop settings. [Spectra Bar](https://github.com/itsw1n/spectra-bar)
-is an independent bar for Omarchy v4. This setup connects to its repository
-through a Git submodule and installs a saved Spectra version by default.
-A separate Spectra installation is not required. The development-link option
-changes where the bar reads its code; it does not make Spectra optional.
-See the [Spectra installation and update guide](docs/spectra-workflow.md) for
-installation instructions and the workflow for maintaining both repositories.
+<p align="center">A portable snapshot of my Omarchy 4.x desktop.</p>
 
-## Install on another machine
+This repo restores my desktop settings on another machine: **Spectra Bar**,
+Hyprland and input settings, the DEYMN screensaver, wallpaper, idle/lock times
+and Foot terminal settings. Tested on Omarchy 4.0.6 / Hyprland 0.56.2.
 
-Install Omarchy first and log into its desktop. Then:
+[Spectra Bar](https://github.com/itsw1n/spectra-bar) is included as a pinned Git
+submodule, so you do not need to install it separately. See the
+[Spectra workflow](docs/spectra-workflow.md) for updates.
+
+## Quick start
+
+Install Omarchy first and log into its desktop. Then run:
 
 ```bash
 git clone --recurse-submodules https://github.com/itsw1n/Omarchy.git ~/Files/omarchy-setup
 cd ~/Files/omarchy-setup
-./install.sh --dry-run
-./install.sh
+./install.sh --dry-run   # preview the changes
+./install.sh             # install
 ```
 
-The clone command also downloads the saved Spectra version. Git calls this linked
-repository a **submodule**; it lives at `dotfiles/omarchy/plugins/itsw1n.spectra-bar/`.
-For an existing clone, run `git submodule update --init --recursive` first.
-Python 3, jq, Hyprland and the Omarchy 4 shell are required. Normal installation
-copies desktop settings and Spectra runtime files; the source clone can then move.
-No OS reinstall or administrator privileges are required.
-
-Existing monitor settings are preserved by default. A new machine uses automatic
-connector detection, preferred resolution, automatic placement and scale 1.
-To explicitly replace its monitor configuration:
+If you already cloned the repo without submodules:
 
 ```bash
-./install.sh --monitors portable  # automatic layout
-./install.sh --monitors deymn     # DEYMN laptop at 1.25x and HDMI TV at 1x
+git submodule update --init --recursive
 ```
 
-The laptop/TV profile is hardware-specific. Adjust the scale in
-`~/.config/hypr/monitors.lua` for a different screen. Use `--no-apply` to copy
-without changing the running theme/session. `--home /tmp/example-home` installs
-offline into a separate home directory without running desktop commands.
+Requirements: Python 3, `jq`, Hyprland and the Omarchy 4 shell. No OS reinstall
+or administrator privileges are needed. The installer copies the settings, so
+the clone can be moved afterward.
 
-The installer selects the saved theme and wallpaper, validates Hyprland after
-reload and rescans shell plugins. Spectra and shell configuration hot-reload.
-Log in again if installing outside a running desktop. Use `packages.txt` for the
-font names and optional applications; applications and accounts are separate
-from this desktop snapshot. OpenCode and Typora shortcuts require those apps. The OpenCode shortcut launches
-an installed Mise version in offline mode, with system/native installations as
-fallbacks; it never installs or updates OpenCode during startup.
-The default terminal selection remains the destination machine's preference.
+## Install options
 
-## What is saved
+| Option | What it does |
+| --- | --- |
+| `--dry-run` | Show what would change without writing anything |
+| `--monitors preserve` | Keep the destination machine's monitor setup (default) |
+| `--monitors portable` | Detect connectors, use preferred resolution, auto-place, scale 1 |
+| `--monitors deymn` | My laptop at 1.25x plus HDMI TV at 1x (hardware-specific) |
+| `--no-apply` | Copy files only; apply theme and session at next login |
+| `--home PATH` | Install into another home directory, e.g. for offline testing |
+| `--restore PATH` | Restore a previous backup (backs up current config first) |
+| `--spectra-dev PATH` | Link a separate Spectra checkout for bar development |
+| `--spectra-copy` | Return to the saved Spectra copy after development mode |
 
-- `dotfiles/hypr/`: Lua overrides, display picker and TV scripts, night-light and portal configuration.
-- `dotfiles/omarchy/shell.json`: Spectra selection, widgets/actions, 150-second screensaver and 300-second lock.
-- `dotfiles/omarchy/plugins/itsw1n.spectra-bar/`: Git submodule pointing to the saved Spectra version; its runtime and MIT license are copied during installation.
-- `dotfiles/omarchy/branding/` and `wallpapers/`: personal artwork.
-- `dotfiles/omarchy/hooks/`: portable hooks with no dependency on this clone.
-- `dotfiles/foot/`: Foot terminal settings. Other terminal configurations are not captured or installed.
-- `dotfiles/fastfetch/`: system-info layout and DEYMN ASCII logo.
-- `profiles/`: automatic and original-machine display profiles.
-- `preferences.json`: theme and wallpaper selection.
+The installer selects the saved theme and wallpaper, reloads Hyprland, validates
+the config and rescans shell plugins. Spectra and shell settings hot-reload. If
+you install outside a running desktop, log in again.
 
-The installer merges these files into user configuration. Unrelated plugins,
-themes and hooks are preserved. It removes only obsolete DEYMN hooks that
-patched branding or overwrote configs on every boot. Existing repository-linked
-configuration directories are detached before writing.
+`packages.txt` lists the fonts and optional applications. Accounts and installed
+apps are not part of this snapshot. The OpenCode and Typora shortcuts require
+those apps; the OpenCode shortcut uses an installed Mise version in offline mode
+and never installs or updates it at startup. Your terminal choice is preserved.
+
+## What gets saved
+
+| Path | Contents |
+| --- | --- |
+| `dotfiles/hypr/` | Lua overrides, display picker and TV scripts, night light and portal config |
+| `dotfiles/omarchy/shell.json` | Spectra widgets/actions, 150s screensaver, 300s lock |
+| `dotfiles/omarchy/plugins/itsw1n.spectra-bar/` | Pinned Spectra submodule; runtime and MIT license are copied on install |
+| `dotfiles/omarchy/branding/`, `wallpapers/` | Personal artwork |
+| `dotfiles/omarchy/hooks/` | Portable hooks that do not depend on this clone |
+| `dotfiles/foot/` | Foot terminal settings only |
+| `dotfiles/fastfetch/` | System-info layout and DEYMN ASCII logo |
+| `profiles/` | Automatic and original-machine display profiles |
+| `preferences.json` | Selected theme and wallpaper |
+
+The installer merges these files into your config. Unrelated plugins, themes and
+hooks are preserved. It only removes obsolete DEYMN hooks that patched branding
+or overwrote configs on every boot, and detaches config folders previously linked
+to this repo before writing.
+
+## Screenshots
+
+Screenshots of the desktop, bar and lock screen live in
+[`docs/images/`](docs/images/README.md). Add new images there and list them in
+that folder's index.
 
 ## Backups and rollback
 
-Every install backs up the affected configuration roots (`hypr`, `omarchy`,
-`foot`, and `fastfetch`) under `~/.local/state/omarchy-setup/backups/<timestamp>/`.
-If copying or live validation fails, those configuration roots are restored.
-Theme application can also change generated theme state and application colors;
-that state is not part of configuration rollback. Reapply the previous theme if needed.
+Every install backs up `hypr`, `omarchy`, `foot` and `fastfetch` to
+`~/.local/state/omarchy-setup/backups/<timestamp>/`. If copying or validation
+fails, those folders are restored automatically.
 
-To restore a previous configuration explicitly:
+To restore a backup manually:
 
 ```bash
 ./install.sh --restore ~/.local/state/omarchy-setup/backups/TIMESTAMP
 ```
 
-Restoration first backs up the current configuration and then restores those
-four configuration roots, including files added since the backup. Log in again
-and reapply your previous theme afterward. Older seven-directory backups remain
-supported; explicitly restoring one also restores the other terminal settings it
-contains. Backups are local and never committed.
+Restoration backs up the current config first, then restores those four folders,
+including files added since the backup. Log in again and reapply your previous
+theme afterward. Theme-generated state and app colors are not rolled back.
+Older seven-folder backups still work. Backups stay local and are never committed.
 
-## Update this snapshot after changing the desktop
+## Update this snapshot
+
+After changing the desktop:
 
 ```bash
 python3 scripts/capture.py
@@ -99,44 +110,40 @@ python3 scripts/capture.py
 git diff
 ```
 
-Capture reads an explicit list of desktop settings. It does not copy Spectra or
-change the saved submodule version.
-It also saves the active wallpaper, theme name and locally authored theme overlays.
-It keeps a backup of the previous snapshot under
-`~/.local/state/omarchy-setup/captures/`. It does not collect credentials, Wi-Fi
-profiles, browser data, applications, or an entire home directory.
+Capture reads an explicit allowlist of settings. It does not copy Spectra or
+change the pinned submodule. It saves the active wallpaper, theme name and local
+theme overlays, and keeps the previous snapshot under
+`~/.local/state/omarchy-setup/captures/`. It never collects credentials, Wi-Fi
+profiles, browser data, applications or your whole home directory.
 
-## Optional: edit Spectra directly
+## Develop Spectra locally
 
-For bar development, clone Spectra separately, then run this command from the
-`omarchy-setup` folder:
+For bar development, clone Spectra separately and link it:
 
 ```bash
 ./install.sh --spectra-dev ~/Files/spectra-bar
 ```
 
-The running bar reads that folder through a symlink (a filesystem shortcut).
-Reload the shell after code changes if needed. The folder must stay in place.
-Repeat installs preserve the link.
-To return to a standalone copy of the saved version, run `./install.sh --spectra-copy`.
+The bar then reads that folder through a symlink. Keep the folder in place and
+reload the shell after code changes. Repeat installs keep the link. Run
+`./install.sh --spectra-copy` to return to the saved copy.
 
-Spectra edits do not automatically update this repo's saved version.
-After publishing Spectra changes, follow [the update workflow](docs/spectra-workflow.md#after-publishing-spectra-changes-maintainers)
-to save the newer version in this setup.
+Spectra edits do not update this repo automatically. After publishing changes,
+follow the
+[update workflow](docs/spectra-workflow.md#after-publishing-spectra-changes-maintainers)
+to save the newer version here.
 
 ## Removed old setup
 
-The obsolete v3 installer, Waybar files, Hyprlock/Hypridle configuration, upgrade
-staging and automatic Plymouth scripts have been removed from this working tree.
-They were backed up locally outside the repository before removal. The last
-committed legacy setup is also preserved in the
-[v1.0.0-omarchy3 release](https://github.com/itsw1n/Omarchy/releases/tag/v1.0.0-omarchy3). Stock Aether shader symlinks have
-been removed from the snapshot; they pointed to package-owned system files and
-are not required by this desktop. The installed shader package/files are untouched.
+The old v3 installer, Waybar files, Hyprlock/Hypridle config, upgrade staging and
+automatic Plymouth scripts were removed. They were backed up outside the repo,
+and the last legacy version is preserved in the
+[v1.0.0-omarchy3 release](https://github.com/itsw1n/Omarchy/releases/tag/v1.0.0-omarchy3).
 
-Boot/login Plymouth branding is separate from the current Quickshell lock screen
-and remains a manual system customization. Personal artwork remains in assets/.
-Night light remains off by default, matching this desktop. No machine-specific
-Wi-Fi driver tweaks or upgrade preparation scripts are applied.
+Stock Aether shader symlinks were removed because they pointed at package-owned
+system files; the installed shader files are untouched. Boot/login Plymouth
+branding remains a manual customization, separate from the Quickshell lock screen.
+Personal artwork stays in `assets/`. Night light remains off by default, and no
+machine-specific Wi-Fi or upgrade scripts are applied.
 
-See CLEANUP.md for the checks and retained files.
+See [CLEANUP.md](CLEANUP.md) for the checks and retained files.
