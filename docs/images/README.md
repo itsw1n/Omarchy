@@ -13,12 +13,14 @@ the date so a replacement image keeps the same link.
 Spectra bar.
 
 - [`old-waybar.png`](bar/old-waybar.png) — old Waybar with btop and files.
+- [`spectra-bar.png`](bar/spectra-bar.png) — current Spectra bar strip.
 
 ## Desktop
 
 `desktop/` — desktop layout, wallpaper, gaps, borders and monitor arrangements.
 
 - [`omarchy-menu.png`](desktop/omarchy-menu.png) — Omarchy menu on the desktop.
+- [`omarchy-v4-setup.png`](desktop/omarchy-v4-setup.png) — current desktop with the Arch Control Hub menu.
 
 ## Lock screen
 
